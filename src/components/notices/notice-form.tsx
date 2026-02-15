@@ -53,7 +53,8 @@ export default function NoticeForm({ initialData }: NoticeFormProps) {
         throw new Error(data.error || "저장에 실패했습니다");
       }
 
-      router.push("/admin/notices");
+      const saved = await res.json();
+      router.push(`/admin/notices/${saved.id}`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "저장에 실패했습니다");

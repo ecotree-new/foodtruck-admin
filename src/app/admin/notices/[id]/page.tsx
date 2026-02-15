@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +68,7 @@ export default function NoticeDetailPage() {
 
       {/* 본문 */}
       <div className="prose max-w-none py-6">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{notice.content}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{notice.content}</ReactMarkdown>
       </div>
 
       <Separator className="my-6" />

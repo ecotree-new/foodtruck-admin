@@ -9,7 +9,7 @@ export default function EditEventPage() {
   const [event, setEvent] = useState<{
     id: string;
     title: string;
-    content: [];
+    content: string;
     cover_image_url: string | null;
     is_published: boolean;
   } | null>(null);

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
     .from("events")
-    .select("id, title, slug, cover_image_url, is_published, created_at, updated_at", {
+    .select("id, title, slug, cover_image_url, is_published, created_at, updated_at, view_count", {
       count: "exact",
     })
     .eq("is_published", true);

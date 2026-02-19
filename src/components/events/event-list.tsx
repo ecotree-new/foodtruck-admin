@@ -31,6 +31,7 @@ interface Event {
   slug: string;
   cover_image_url: string | null;
   is_published: boolean;
+  view_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -135,6 +136,7 @@ export default function EventList() {
               <TableHead className="w-16">커버</TableHead>
               <TableHead>제목</TableHead>
               <TableHead className="w-24">상태</TableHead>
+              <TableHead className="w-20">조회수</TableHead>
               <TableHead className="w-40">작성일</TableHead>
               <TableHead className="w-48">관리</TableHead>
             </TableRow>
@@ -168,6 +170,9 @@ export default function EventList() {
                   >
                     {event.is_published ? "공개" : "비공개"}
                   </Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {event.view_count ?? 0}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
                   {new Date(event.created_at).toLocaleDateString("ko-KR")}

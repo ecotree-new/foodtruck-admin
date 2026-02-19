@@ -7,11 +7,19 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get("limit") || "20");
   const offset = (page - 1) * limit;
 
-  const { data, error, count } = await supabase
+  const search = searchParams.get("search") || "";
+
+  let query = supabase
     .from("events")
     .select("id, title, slug, cover_image_url, is_published, created_at, updated_at", {
       count: "exact",
-    })
+    });
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`);
+  }
+
+  const { data, error, count } = await query
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 

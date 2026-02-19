@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -37,15 +38,19 @@ interface Notice {
 export default function NoticeList() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const router = useRouter();
 
   useEffect(() => {
     fetchNotices();
   }, []);
 
-  async function fetchNotices() {
+  async function fetchNotices(query?: string) {
     try {
-      const res = await fetch("/api/admin/notices");
+      const params = new URLSearchParams();
+      const q = query ?? search;
+      if (q) params.set("search", q);
+      const res = await fetch(`/api/admin/notices?${params}`);
       const json = await res.json();
       setNotices(json.data || []);
     } catch {
@@ -93,6 +98,34 @@ export default function NoticeList() {
           <Link href="/admin/notices/new">새 공지 작성</Link>
         </Button>
       </div>
+
+      <form
+        className="mb-4 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchNotices();
+        }}
+      >
+        <Input
+          placeholder="제목 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+        <Button type="submit" variant="outline">검색</Button>
+        {search && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              setSearch("");
+              fetchNotices("");
+            }}
+          >
+            초기화
+          </Button>
+        )}
+      </form>
 
       {notices.length === 0 ? (
         <p className="text-muted-foreground">공지사항이 없습니다.</p>

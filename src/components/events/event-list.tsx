@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -37,14 +38,18 @@ interface Event {
 export default function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  async function fetchEvents() {
+  async function fetchEvents(query?: string) {
     try {
-      const res = await fetch("/api/admin/events");
+      const params = new URLSearchParams();
+      const q = query ?? search;
+      if (q) params.set("search", q);
+      const res = await fetch(`/api/admin/events?${params}`);
       const json = await res.json();
       setEvents(json.data || []);
     } catch {
@@ -92,6 +97,34 @@ export default function EventList() {
           <Link href="/admin/events/new">새 행사 작성</Link>
         </Button>
       </div>
+
+      <form
+        className="mb-4 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchEvents();
+        }}
+      >
+        <Input
+          placeholder="제목 검색"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+        <Button type="submit" variant="outline">검색</Button>
+        {search && (
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => {
+              setSearch("");
+              fetchEvents("");
+            }}
+          >
+            초기화
+          </Button>
+        )}
+      </form>
 
       {events.length === 0 ? (
         <p className="text-muted-foreground">행사가 없습니다.</p>

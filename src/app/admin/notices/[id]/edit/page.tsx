@@ -11,6 +11,8 @@ export default function EditNoticePage() {
     title: string;
     content: string;
     is_published: boolean;
+    attachment_url?: string | null;
+    attachment_filename?: string | null;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 

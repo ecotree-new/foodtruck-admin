@@ -42,7 +42,7 @@ function generateSlug(title: string): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, content, cover_image_url, is_published } = body;
+    const { title, content, cover_image_url, is_published, attachment_url, attachment_filename } = body;
 
     if (!title || !content) {
       return NextResponse.json({ error: "제목과 내용은 필수입니다" }, { status: 400 });
@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
         content,
         cover_image_url: cover_image_url || null,
         is_published: is_published ?? true,
+        attachment_url: attachment_url || null,
+        attachment_filename: attachment_filename || null,
       })
       .select()
       .single();

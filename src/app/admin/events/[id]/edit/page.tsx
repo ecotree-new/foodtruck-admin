@@ -12,6 +12,8 @@ export default function EditEventPage() {
     content: string;
     cover_image_url: string | null;
     is_published: boolean;
+    attachment_url?: string | null;
+    attachment_filename?: string | null;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 

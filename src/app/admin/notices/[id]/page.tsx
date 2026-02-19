@@ -15,6 +15,8 @@ interface Notice {
   title: string;
   content: string;
   is_published: boolean;
+  attachment_url: string | null;
+  attachment_filename: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -70,6 +72,23 @@ export default function NoticeDetailPage() {
       <div className="prose max-w-none py-6">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{notice.content}</ReactMarkdown>
       </div>
+
+      {notice.attachment_url && notice.attachment_filename && (
+        <>
+          <Separator className="my-4" />
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">첨부파일</span>
+            <a
+              href={notice.attachment_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline underline-offset-4 hover:text-primary/80"
+            >
+              {notice.attachment_filename}
+            </a>
+          </div>
+        </>
+      )}
 
       <Separator className="my-6" />
 

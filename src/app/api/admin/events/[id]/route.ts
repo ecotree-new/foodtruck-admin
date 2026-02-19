@@ -29,13 +29,30 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { title, content, cover_image_url, is_published } = body;
+    const { title, content, cover_image_url, is_published, attachment_url, attachment_filename } = body;
+
+    // 기존 attachment 조회 (변경/제거 시 R2 정리)
+    if (attachment_url !== undefined) {
+      const { data: existing } = await supabase
+        .from("events")
+        .select("attachment_url")
+        .eq("id", id)
+        .single();
+
+      const r2PublicUrl = process.env.R2_PUBLIC_URL || "";
+      if (existing?.attachment_url && existing.attachment_url !== attachment_url && existing.attachment_url.startsWith(r2PublicUrl)) {
+        const key = existing.attachment_url.replace(`${r2PublicUrl}/`, "");
+        await deleteR2Object(key).catch(() => {});
+      }
+    }
 
     const updateData: Record<string, unknown> = {};
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
     if (cover_image_url !== undefined) updateData.cover_image_url = cover_image_url;
     if (is_published !== undefined) updateData.is_published = is_published;
+    if (attachment_url !== undefined) updateData.attachment_url = attachment_url;
+    if (attachment_filename !== undefined) updateData.attachment_filename = attachment_filename;
 
     const { data, error } = await supabase
       .from("events")
@@ -64,7 +81,7 @@ export async function DELETE(
     // 행사 데이터 조회 (본문에서 이미지 URL 추출용)
     const { data: event } = await supabase
       .from("events")
-      .select("content, cover_image_url")
+      .select("content, cover_image_url, attachment_url")
       .eq("id", id)
       .single();
 
@@ -75,6 +92,11 @@ export async function DELETE(
 
       if (event.cover_image_url?.startsWith(r2PublicUrl)) {
         imageUrls.push(event.cover_image_url);
+      }
+
+      if (event.attachment_url?.startsWith(r2PublicUrl)) {
+        const attachKey = event.attachment_url.replace(`${r2PublicUrl}/`, "");
+        await deleteR2Object(attachKey).catch(() => {});
       }
 
       const imgRegex = /!\[.*?\]\((.*?)\)/g;

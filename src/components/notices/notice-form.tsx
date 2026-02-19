@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import FileAttachment from "@/components/editor/file-attachment";
 
 const MdxEditor = dynamic(() => import("@/components/editor/mdx-editor"), {
   ssr: false,
@@ -18,6 +19,8 @@ interface NoticeFormProps {
     title: string;
     content: string;
     is_published: boolean;
+    attachment_url?: string | null;
+    attachment_filename?: string | null;
   };
 }
 
@@ -25,6 +28,8 @@ export default function NoticeForm({ initialData }: NoticeFormProps) {
   const [title, setTitle] = useState(initialData?.title || "");
   const [content, setContent] = useState(initialData?.content || "");
   const [isPublished, setIsPublished] = useState(initialData?.is_published ?? true);
+  const [attachmentUrl, setAttachmentUrl] = useState(initialData?.attachment_url || "");
+  const [attachmentFilename, setAttachmentFilename] = useState(initialData?.attachment_filename || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -45,7 +50,13 @@ export default function NoticeForm({ initialData }: NoticeFormProps) {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, content, is_published: isPublished }),
+        body: JSON.stringify({
+          title,
+          content,
+          is_published: isPublished,
+          attachment_url: attachmentUrl || null,
+          attachment_filename: attachmentFilename || null,
+        }),
       });
 
       if (!res.ok) {
@@ -82,6 +93,22 @@ export default function NoticeForm({ initialData }: NoticeFormProps) {
           markdown={content}
           onChange={setContent}
           placeholder="공지 내용을 입력하세요"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>첨부파일</Label>
+        <FileAttachment
+          currentUrl={attachmentUrl}
+          currentFilename={attachmentFilename}
+          onUploadComplete={(url, filename) => {
+            setAttachmentUrl(url);
+            setAttachmentFilename(filename);
+          }}
+          onRemove={() => {
+            setAttachmentUrl("");
+            setAttachmentFilename("");
+          }}
         />
       </div>
 

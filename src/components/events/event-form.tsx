@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ImageUpload from "@/components/editor/image-upload";
+import FileAttachment from "@/components/editor/file-attachment";
 
 const MdxEditor = dynamic(() => import("@/components/editor/mdx-editor"), {
   ssr: false,
@@ -20,6 +21,8 @@ interface EventFormProps {
     content: string;
     cover_image_url: string | null;
     is_published: boolean;
+    attachment_url?: string | null;
+    attachment_filename?: string | null;
   };
 }
 
@@ -28,6 +31,8 @@ export default function EventForm({ initialData }: EventFormProps) {
   const [content, setContent] = useState(initialData?.content || "");
   const [coverImageUrl, setCoverImageUrl] = useState(initialData?.cover_image_url || "");
   const [isPublished, setIsPublished] = useState(initialData?.is_published ?? true);
+  const [attachmentUrl, setAttachmentUrl] = useState(initialData?.attachment_url || "");
+  const [attachmentFilename, setAttachmentFilename] = useState(initialData?.attachment_filename || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -53,6 +58,8 @@ export default function EventForm({ initialData }: EventFormProps) {
           content,
           cover_image_url: coverImageUrl || null,
           is_published: isPublished,
+          attachment_url: attachmentUrl || null,
+          attachment_filename: attachmentFilename || null,
         }),
       });
 
@@ -114,6 +121,22 @@ export default function EventForm({ initialData }: EventFormProps) {
           onChange={setContent}
           placeholder="행사 내용을 입력하세요"
           enableImageUpload
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>첨부파일</Label>
+        <FileAttachment
+          currentUrl={attachmentUrl}
+          currentFilename={attachmentFilename}
+          onUploadComplete={(url, filename) => {
+            setAttachmentUrl(url);
+            setAttachmentFilename(filename);
+          }}
+          onRemove={() => {
+            setAttachmentUrl("");
+            setAttachmentFilename("");
+          }}
         />
       </div>
 

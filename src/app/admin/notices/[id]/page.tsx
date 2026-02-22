@@ -70,7 +70,19 @@ export default function NoticeDetailPage() {
 
       {/* 본문 */}
       <div className="prose max-w-none py-6">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{notice.content}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            a: ({ href, children }) => (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {notice.content}
+        </ReactMarkdown>
       </div>
 
       {notice.attachment_url && notice.attachment_filename && (

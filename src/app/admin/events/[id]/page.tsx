@@ -72,7 +72,19 @@ export default function EventDetailPage() {
 
       {/* 본문 */}
       <div className="prose max-w-none py-6">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{event.content}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+          components={{
+            a: ({ href, children }) => (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {event.content}
+        </ReactMarkdown>
       </div>
 
       {event.attachment_url && event.attachment_filename && (
